@@ -2,3 +2,4 @@
 /.vscode
 /notepad.txt
 /Pipfile.lock
+/src/__pycache__
