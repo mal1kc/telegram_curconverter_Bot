@@ -1,3 +1,4 @@
+''' telegram currency converter bot ver0.0.2 '''
 
 from os import getenv
 from dotenv import load_dotenv
