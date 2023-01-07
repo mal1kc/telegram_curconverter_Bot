@@ -175,29 +175,32 @@ def convert(currency_from, currency_to, amnt, replace_commas=True) -> str:
         be like 70000 otherwise it will return with comma like 70,000
     Json
     """
-    
+
     # Validate the parameters
     if not isinstance(currency_from, str):
-        raise TypeError("currency_from should be of type str, passed %s" % type(currency_from))
+        raise TypeError(
+            "currency_from should be of type str, passed %s" % type(currency_from))
 
     if not isinstance(currency_to, str):
-        raise TypeError("currency_to should be of type str, passed %s" % type(currency_to))
+        raise TypeError(
+            "currency_to should be of type str, passed %s" % type(currency_to))
 
     if not isinstance(amnt, float) and not isinstance(amnt, int):
-        raise TypeError("amount should be either int or float, passed %s" % type(amnt))
+        raise TypeError(
+            "amount should be either int or float, passed %s" % type(amnt))
 
     url = f"http://216.58.221.46/search?q=convert+{str(amnt)}+{currency_from}+to+{currency_to}&hl=en&lr=lang_en"
 
     # This will be returned as default if the given code are not present in our database
     default_response = {
-        "from"     : currency_from,  # From currency code
-        "to"       : currency_to,    # To currency code
-        "amount"   : 0,              # Amount of currency to be returned
+        "from": currency_from,  # From currency code
+        "to": currency_to,    # To currency code
+        "amount": 0,              # Amount of currency to be returned
         "converted": False           # Flag indicating whether the currency is converted or not
     }
 
     try:
-        currency_to_name   = CODES[currency_to]
+        currency_to_name = CODES[currency_to]
 
         # Just to check whether this currency exists in out currency code base or not
         currency_from_name = CODES[currency_from]
@@ -207,30 +210,34 @@ def convert(currency_from, currency_to, amnt, replace_commas=True) -> str:
 
         if currency_to_name == currency_from_name:
             default_response["converted"] = True
-            default_response["amount"]    = float(amnt)
+            default_response["amount"] = float(amnt)
             return json.dumps(default_response)
 
         # response = requests.get(url)
         response = requests.get(url, headers={"Range": "bytes=0-1"})
 
-        results = re.findall("[\d*\,]*\.\d* {currency_to_name}".format(currency_to_name=currency_to_name), response.text)
+        results = re.findall(
+            "[\d*\,]*\.\d* {currency_to_name}".format(currency_to_name=currency_to_name), response.text)
 
         # converted_amount_str = "0.0 {to}".format(to=currency_to)
         if results.__len__() > 0:
             converted_amount_str = results[0]
-            converted_currency = re.findall('[\d*\,]*\.\d*', converted_amount_str)[0]
+            converted_currency = re.findall(
+                '[\d*\,]*\.\d*', converted_amount_str)[0]
 
             if replace_commas:
                 converted_currency = converted_currency.replace(',', '')
 
-            default_response["amount"]    = converted_currency
+            default_response["amount"] = converted_currency
             default_response["converted"] = True
             return json.dumps(default_response)
         else:
-            raise Exception("Unable to convert currency, failed to fetch results from Google")
+            raise Exception(
+                "Unable to convert currency, failed to fetch results from Google")
 
     except KeyError as error:
-        logger.error("Invalid currency codes passed in parameters, original exception message is -> %s" % error)
+        logger.error(
+            "Invalid currency codes passed in parameters, original exception message is -> %s" % error)
 
     except TypeError as error:
         logger.error(error)
