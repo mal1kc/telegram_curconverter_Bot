@@ -18,7 +18,7 @@ apscheduler==3.6.3
 
 cachetools==4.2.2; python_version ~= '3.5'
 
-certifi==2022.12.7
+certifi==2023.7.22
 
 charset-normalizer==2.0.6; python_version >= '3'
 
